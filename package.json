@@ -2,7 +2,11 @@
   "name": "fashion-mall-crawler",
   "version": "1.0.0",
   "description": "쇼핑몰별 크롤러를 오픈소스로 제공합니다. 퍼플패퍼(소타랩스)에서 사용할 목적으로 제작되었으며, 상업용 사용이 가능합니다.",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,6 +23,8 @@
   "homepage": "https://github.com/pppper/fashion-mall-crawler#readme",
   "dependencies": {
     "@types/node": "^16.10.3",
+    "axios": "^0.22.0",
+    "jsdom": "^18.0.0",
     "ts-node": "^10.3.0",
     "typescript": "^4.4.3"
   }
