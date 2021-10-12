@@ -2,7 +2,8 @@ name: on release
 
 on:
   release:
-    types: [created]
+    types:
+      - created
 
 jobs:
   publish-npm-registry:
