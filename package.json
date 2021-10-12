@@ -8,7 +8,8 @@
     "/dist"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "echo unimplemented build",
+    "test": "echo unimplemented test"
   },
   "repository": {
     "type": "git",
