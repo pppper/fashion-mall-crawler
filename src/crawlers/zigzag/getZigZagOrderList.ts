@@ -1,7 +1,8 @@
 import axios, { AxiosResponse } from "axios";
 import { ZigZagOrderIdListType } from "./getZigZagOrderIdList";
 
-export interface IZigZagOrderList {
+export type ZigZagOrderListType = IZigZagOrder[];
+export interface IZigZagOrder {
   __typename: string;
   order_number: string;
   date_created: number;
@@ -36,7 +37,7 @@ interface IZigZagProductInfo {
 export const getZigZagOrderList = (
   cookie: string,
   orderIdList: ZigZagOrderIdListType
-): Promise<IZigZagOrderList> => {
+): Promise<ZigZagOrderListType> => {
   return axios({
     method: "post",
     url: "https://api.zigzag.kr/api/2/graphql",
@@ -67,7 +68,7 @@ export const getZigZagOrderList = (
       },
     },
   }).then((response) => {
-    const orderList: IZigZagOrderList = (response as AxiosResponse<any>).data
+    const orderList: ZigZagOrderListType = (response as AxiosResponse<any>).data
       ?.data?.order_list.item_list;
     return orderList;
   });

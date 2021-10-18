@@ -1,7 +1,3 @@
-import {
-  ZigZagAuthenticationCredentials,
-  ZigZagAuthenticationStrategyEnum,
-} from "../../types/interfaces/AuthenticationCredentials.interface";
 import { IClothing } from "../../types/interfaces/Clothing.interface";
 import { extractClothingsInZigZagOrderList } from "./extractClothingsInZigZagOrderList";
 import { getZigZagAuthCookieFromEmailAndPassword } from "./getZigZagAuthCookie";
@@ -9,22 +5,12 @@ import {
   getZigZagOrderIdList,
   ZigZagOrderIdListType,
 } from "./getZigZagOrderIdList";
-import { getZigZagOrderList, IZigZagOrderList } from "./getZigZagOrderList";
 
-export const getZigZagOwnedClothingList = async (
-  authenticationCredentials: ZigZagAuthenticationCredentials
-): Promise<IClothing[]> => {
-  let cookie: string;
-  switch (authenticationCredentials.strategy) {
-    case ZigZagAuthenticationStrategyEnum.USE_EMAIL_AND_PASSWORD:
-      cookie = await getZigZagAuthCookieFromEmailAndPassword(
-        authenticationCredentials.email,
-        authenticationCredentials.password
-      );
-  }
+import { getZigZagOrderList, ZigZagOrderListType } from "./getZigZagOrderList";
 
+const getZigZagOwnedClothingListWithCookie = async (cookie: string) => {
   const orderIdList: ZigZagOrderIdListType = await getZigZagOrderIdList(cookie);
-  const orderList: IZigZagOrderList = await getZigZagOrderList(
+  const orderList: ZigZagOrderListType = await getZigZagOrderList(
     cookie,
     orderIdList
   );
@@ -32,5 +18,20 @@ export const getZigZagOwnedClothingList = async (
     orderList
   );
 
+  return clothingList;
+};
+
+export const getZigZagOwnedClothingListFromEmailAndPassword = async (
+  email: string,
+  password: string
+): Promise<IClothing[]> => {
+  let cookie: string = await getZigZagAuthCookieFromEmailAndPassword(
+    email,
+    password
+  );
+
+  let clothingList: IClothing[] = await getZigZagOwnedClothingListWithCookie(
+    cookie
+  );
   return clothingList;
 };
