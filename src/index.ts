@@ -1,8 +1,9 @@
-import { ZigZagCrawlerModule } from "./crawlers/zigzag";
+import { ZigZagOwnedClothingListCrawlerFactory } from "./crawlers/zigzag";
 import { ZigZagAuthenticationStrategyEnum } from "./types/enums/ZigZagAuthenticationStrategy.enum";
 
-ZigZagCrawlerModule.getClothingList(
-  ZigZagAuthenticationStrategyEnum.USE_EMAIL_AND_PASSWORD
-)("sebastianrcnt@gmail.com", "SECRET").then((clothingList) => {
-  console.log(clothingList);
-});
+const zigZagClothingListCrawler =
+  ZigZagOwnedClothingListCrawlerFactory.createCrawlerWithStrategy(
+    ZigZagAuthenticationStrategyEnum.USE_EMAIL_AND_PASSWORD
+  );
+
+zigZagClothingListCrawler("sebastianrcnt@gmail.com", "SECRET");
