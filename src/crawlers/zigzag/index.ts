@@ -7,7 +7,6 @@ export class ZigZagOwnedClothingListCrawlerFactory {
     switch (strategy) {
       case ZigZagAuthenticationStrategyEnum.USE_EMAIL_AND_PASSWORD:
         return getZigZagOwnedClothingListFromEmailAndPassword;
-      case ZigZagAuthenticationStrategyEnum.UNSET:
       default:
         throw new InvalidZigZagAuthenticationStrategyEnum();
     }
