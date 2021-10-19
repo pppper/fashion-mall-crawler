@@ -1,32 +1,8 @@
-import { IClothing } from "../../types/interfaces/Clothing.interface";
 import axios, { AxiosResponse } from "axios";
-import {
-  InvalidZigZagAuthenticationStrategyEnum,
-  ZigZagLoginFailedException,
-} from "../../excpetions";
-import { ZigZagAuthenticationStrategyEnum } from "../../types/enums/ZigZagAuthenticationStrategy.enum";
+import Exceptions from "../../../types/exceptions";
+import { IClothing } from "../../../types/interfaces/Clothing.interface";
 
-const extractClothingsInZigZagOrderList = (
-  zigZagOrderList: ZigZagOrderListType
-): IClothing[] => {
-  let clothings: IClothing[] = [];
-  for (let order of zigZagOrderList) {
-    for (let orderShop of order.order_shop_list) {
-      for (let orderItem of orderShop.order_item_list) {
-        let productInfo = orderItem.product_info;
-        clothings.push({
-          productUrl: productInfo.url,
-          imageUrl: productInfo.image_url,
-          options: productInfo.options,
-        });
-      }
-    }
-  }
-
-  return clothings;
-};
-
-const getZigZagAuthCookieFromEmailAndPassword = (
+const fetchZigZagAuthCookieFromEmailAndPassword = (
   email: string,
   password: string
 ): Promise<string> => {
@@ -69,16 +45,16 @@ const getZigZagAuthCookieFromEmailAndPassword = (
       if (loginSuccess) {
         return cookie;
       } else {
-        throw new ZigZagLoginFailedException();
+        throw new Exceptions.ZigZagLoginFailedException();
       }
     })
     .catch((error) => {
-      throw new ZigZagLoginFailedException({ error });
+      throw new Exceptions.ZigZagLoginFailedException({ error });
     });
 };
 
 type ZigZagOrderIdListType = string[];
-const getZigZagOrderIdList = (
+const fetchZigZagOrderIdList = (
   cookie: string
 ): Promise<ZigZagOrderIdListType> => {
   return axios({
@@ -118,40 +94,7 @@ const getZigZagOrderIdList = (
   });
 };
 
-interface IZigZagOrder {
-  __typename: string;
-  order_number: string;
-  date_created: number;
-  order_shop_list: IZigZagOrderShopList[];
-}
-
-interface IZigZagOrderShopList {
-  __typename: string;
-  shop_main_domain: string;
-  order_item_list: IZigZagOrderItemList[];
-}
-
-interface IZigZagOrderItemList {
-  __typename: string;
-  order_item_number: string;
-  status: string;
-  recent_reject_request: null;
-  shipping_company: null;
-  invoice_number: null;
-  product_info: IZigZagProductInfo;
-  is_zonly: boolean;
-}
-
-interface IZigZagProductInfo {
-  __typename: string;
-  name: string;
-  url: string;
-  image_url: string;
-  options: string;
-}
-
 type ZigZagOrderListType = IZigZagOrder[];
-
 interface IZigZagOrder {
   __typename: string;
   order_number: string;
@@ -184,7 +127,7 @@ interface IZigZagProductInfo {
   options: string;
 }
 
-const getZigZagOrderList = (
+const fetchZigZagOrderList = (
   cookie: string,
   orderIdList: ZigZagOrderIdListType
 ): Promise<ZigZagOrderListType> => {
@@ -224,9 +167,11 @@ const getZigZagOrderList = (
   });
 };
 
-const getZigZagOwnedClothingListWithCookie = async (cookie: string) => {
-  const orderIdList: ZigZagOrderIdListType = await getZigZagOrderIdList(cookie);
-  const orderList: ZigZagOrderListType = await getZigZagOrderList(
+const fetchZigZagOwnedClothingListWithCookie = async (cookie: string) => {
+  const orderIdList: ZigZagOrderIdListType = await fetchZigZagOrderIdList(
+    cookie
+  );
+  const orderList: ZigZagOrderListType = await fetchZigZagOrderList(
     cookie,
     orderIdList
   );
@@ -237,35 +182,9 @@ const getZigZagOwnedClothingListWithCookie = async (cookie: string) => {
   return clothingList;
 };
 
-const getZigZagOwnedClothingListFromEmailAndPassword = async (
-  email: string,
-  password: string
-): Promise<IClothing[]> => {
-  let cookie: string = await getZigZagAuthCookieFromEmailAndPassword(
-    email,
-    password
-  );
-
-  let clothingList: IClothing[] = await getZigZagOwnedClothingListWithCookie(
-    cookie
-  );
-  return clothingList;
+export {
+  fetchZigZagAuthCookieFromEmailAndPassword,
+  fetchZigZagOrderIdList,
+  fetchZigZagOrderList,
+  fetchZigZagOwnedClothingListWithCookie,
 };
-
-class ZigZagOwnedClothingListCrawlerFactory {
-  static createCrawlerWithStrategy(strategy: ZigZagAuthenticationStrategyEnum) {
-    switch (strategy) {
-      case ZigZagAuthenticationStrategyEnum.USE_EMAIL_AND_PASSWORD:
-        return getZigZagOwnedClothingListFromEmailAndPassword;
-      default:
-        throw new InvalidZigZagAuthenticationStrategyEnum();
-    }
-  }
-}
-
-namespace ZigZagOwnedClothingListCrawlerModule {
-  export const createCrawlerWithStrategy =
-    ZigZagOwnedClothingListCrawlerFactory.createCrawlerWithStrategy;
-}
-
-export default ZigZagOwnedClothingListCrawlerModule;
