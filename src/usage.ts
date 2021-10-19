@@ -1,13 +1,13 @@
 // usage examples
 
 import { ZigZagOwnedClothingListCrawlerFactory } from "./crawlers/owned-clothing-list/zigzag/crawler-factories";
-import { ZigZagAuthenticationStrategyEnum } from "./types/enums/ZigZagAuthenticationStrategy.enum";
+import { ZigZagAuthenticationStrategy } from "./types/enums/ZigZagAuthenticationStrategy.enum";
 import Exceptions from "./types/exceptions";
 
 async function zigZagOwnedClothingListCrawlerUsageExample() {
   const getZigZagClothingList =
     ZigZagOwnedClothingListCrawlerFactory.createCrawlerWithStrategy(
-      ZigZagAuthenticationStrategyEnum.USE_EMAIL_AND_PASSWORD
+      ZigZagAuthenticationStrategy.USE_EMAIL_AND_PASSWORD
     );
   try {
     const clothingList = await getZigZagClothingList("email", "password");
